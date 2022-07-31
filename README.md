@@ -2,7 +2,7 @@
 #### Facial recognition is one of the front-runner applications of AI. It is one of the advanced forms of biometric authentication capable of identifying and verifying a person using facial features in an image or video from a database.
 <br><br>
 
-### Working
+## Working
 
 This website we developed essentially tells us the benefits and code for facial recognition and emotion detection. This website logs the user into the website using Facial recognition and a password system to provide a double security. We can also run the facial recognition and emotion detection code inside website.
 
