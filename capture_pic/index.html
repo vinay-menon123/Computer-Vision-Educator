@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+   <title>Register</title>
+
+   <style type="text/css">
+.container{display:inline-block;width:320px;}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light navbar-laravel">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</nav>
+
+<main class="login-form">
+    <div class="cotainer">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Registering Form</div>
+                    <div class="card-body">
+                        <form action="saveImage.php" method="post">
+                            <div>
+                                <label for="email">Enter Your e-mail ID: </label>
+                                <input type="text" id="email">
+                            </div>
+                            <div class="form-group row">
+                                
+                                <label class="col-md-4 col-form-label text-md-right">Capture Image</label>
+                                <div class="col-md-6">
+                                    <button onclick="ShowCam()" type="button" class="btn btn-primary" >Click to capture</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-md-4 col-form-label text-md-right">Camera</label>
+                                <div class="col-md-6">
+                                     <div class="container" id="Cam">
+                                        <div style="width:320px; height:240px;" id="my_camera"></div>
+                                        <br>
+                                        <form>
+                                            <input type="button" class="btn btn-success" value="Snap It" onClick="take_snapshot()">
+                                        </form>
+                                    </div>
+                                    <div class="container" id="Prev">
+                                        <div id="results">
+                                            <p id="uploaded"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</main>
+
+</body>
+
+<script language="JavaScript">
+function take_snapshot() {
+    Webcam.snap(function(data_uri) {
+        document.getElementById('results').innerHTML = '<img id="base64image" src="'+data_uri+'"/><br><br><button onclick="SaveSnap();" type="button" class="btn btn-success" >Save Snap & Login!</button>';
+});
+}
+
+function ShowCam(){
+
+Webcam.set({
+    width: 320,
+    height: 240,
+    dest_width: 640,
+    dest_height: 480,
+    image_format: 'jpeg',
+    jpeg_quality: 100,
+    force_flash: false
+});
+
+Webcam.attach('#my_camera');
+}
+
+function SaveSnap(){
+    var str = document.getElementById("email").value;
+    var file =  document.getElementById("base64image").src;
+    var formdata = new FormData();
+    formdata.append("base64image", file);
+    formdata.append('email', str);
+    var ajax = new XMLHttpRequest();
+    ajax.addEventListener("load", function(event) { uploadcomplete(event);}, false);
+    ajax.open("POST", "http://localhost:8012/J-comp/capture_pic/saveImage.php");
+    ajax.send(formdata);
+    header('localhost:8012/J-comp/capture_pic/registered.html');
+}
+
+function uploadcomplete(event){
+    alert("Face Registered!");
+    window.location.href = "http://localhost:8012/J-comp/capture_pic/registered.html";
+}
+</script>
+</html>

@@ -1,0 +1,14 @@
+import cv2
+from cv2 import dnn_superres
+
+# Create an SR object
+sr = dnn_superres.DnnSuperResImpl_create()
+
+image = cv2.imread('C:/xampp/htdocs/ML_Emotion_recognition/capture_pic/images/626852018aeb2.jpg')
+
+path = "C:/xampp/htdocs/ML_Emotion_recognition/capture_pic/EDSR_x3.pb"
+sr.readModel(path)
+sr.setModel("edsr", 3)
+
+result = sr.upsample(image)
+cv2.imwrite("C:/xampp/htdocs/ML_Emotion_recognition/capture_pic/images/up.jpg", result)

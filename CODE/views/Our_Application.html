@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title> Our application </title>
+
+<head>
+  <link href="./styles/style_meg.css" rel="stylesheet">
+<style>
+    *{padding: 10px;}
+
+.row{ display: flex;}
+.col1
+{
+  flex: 33.33%;
+}
+.col2
+{
+  flex: 50%;
+}
+img 
+{
+    float: left; 
+    margin: 5px;
+}
+
+.center 
+{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 10%;
+}
+
+</style>
+</head>
+<div class="image"></div>
+   <section class="content">
+    <p align="right">
+      <button class="glow-on-hover" onclick="myFunction()">Toggle dark mode</button>
+    </p>
+    <h1 style="text-align: center;"> SENTIMENT ANALYSIS USING FACIAL DETECTION  </h1>
+
+    <h1 style="text-align : center"> THE NEED </h1>
+    <br>
+    <div class="row">
+      <div class="col1">
+        <img src="./images/face1.jpeg" alt="Emotion Detection">
+      </div>
+      <p>
+        Automatic emotion recognition based on facial expression is an interesting research field, which has been presented and applied in several areas such as safety, health and in human machine interfaces.
+        With the remarkable success of deep learning, the different types of architectures of this technique are exploited to achieve a better performance.
+            <br> <br>
+            
+                Sentiment analysis is extremely useful in social media monitoring as it allows us to gain an overview of the wider public opinion behind certain topics.
+                The applications of sentiment analysis are broad and powerful. 
+                The ability to extract insights from social data is a practice that is being widely adopted by organizations across the world.
+      </p>
+    </div>
+    <br><br>
+    <h1> HOW IT WORKS - BRINGING HAAR CASCADE TO THE PICTURE </h1>
+    <br>
+    <p> Haar-Features are good at detecting edges and lines. This makes it especial effective in face detection.
+    Also as we don't need to train Haar-Features, we can create a classifier with a relatively small dataset. </p>
+    <p> All we have to do is train the weightings for each feature which allows us to train the classifier well without a lot of training images. 
+    In addition, it also has a higher execution speed, as Haar-based classifiers typically involve less computations. </p>
+    <p> Another one of the primary benefits of Haar cascades is that they are just so fast — it's hard to beat their speed.</p>
+
+    <div class="row">
+      <div class="col2">
+        <img src="./images/emotion_detection-1.webp" alt="Emotion Detection" width="500" height="400">
+      </div>
+      <img src="./images/emotion_1.jpeg" alt="Emotion Detection"  width="500" height="400">
+      </p>
+    </div>
+    <script>
+      function myFunction() {
+         var element = document.body;
+         element.classList.toggle("dark-mode");
+      }
+      </script>
+  </section>
+</body>
+</html>

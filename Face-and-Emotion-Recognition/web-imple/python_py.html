@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sofia">
+    <link rel="stylesheet"
+      href="./styles/vs2015.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Document</title>
+    <style>
+        .button {
+          background-color: #331e5a;
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+        }
+        h1
+        {
+            font-family: "Sofia", sans-serif;
+        }
+        </style>
+</head>
+<body style="background-color: gray;">  
+    <h1 style = "color: black;">Code for emotion recogition through video</h1>
+    <pre>
+        <code class="python">
+import cv2
+import numpy as np
+import dlib
+from imutils import face_utils
+import face_recognition
+from keras.models import load_model
+from statistics import mode
+from utils.datasets import get_labels
+from utils.inference import detect_faces
+from utils.inference import draw_text
+from utils.inference import draw_bounding_box
+from utils.inference import apply_offsets
+from utils.inference import load_detection_model
+from utils.preprocessor import preprocess_input
+
+USE_WEBCAM = False # If false, loads video file source
+
+# parameters for loading data and images
+emotion_model_path = './models/emotion_model.hdf5'
+emotion_labels = get_labels('fer2013')
+
+# hyper-parameters for bounding boxes shape
+frame_window = 10
+emotion_offsets = (20, 40)
+
+# loading models
+detector = dlib.get_frontal_face_detector()
+emotion_classifier = load_model(emotion_model_path)
+
+# predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
+
+# getting input model shapes for inference
+emotion_target_size = emotion_classifier.input_shape[1:3]
+
+# starting lists for calculating modes
+emotion_window = []
+
+# starting video streaming
+
+cv2.namedWindow('window_frame')
+video_capture = cv2.VideoCapture(0)
+
+# Select video or webcam feed
+cap = None
+if (USE_WEBCAM == True):
+    cap = cv2.VideoCapture(0) # Webcam source
+else:
+    cap = cv2.VideoCapture('C:/Users/Admin/Documents/projects/AI_Project_Emotion/test/testvdo.mp4') # Video file source
+
+while cap.isOpened(): # True:
+    ret, bgr_image = cap.read()
+
+    #bgr_image = video_capture.read()[1]
+
+    gray_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2GRAY)
+    rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+
+    faces = detector(rgb_image)
+
+    for face_coordinates in faces:
+
+        x1, x2, y1, y2 = apply_offsets(face_utils.rect_to_bb(face_coordinates), emotion_offsets)
+        gray_face = gray_image[y1:y2, x1:x2]
+        try:
+            gray_face = cv2.resize(gray_face, (emotion_target_size))
+        except:
+            continue
+
+        gray_face = preprocess_input(gray_face, True)
+        gray_face = np.expand_dims(gray_face, 0)
+        gray_face = np.expand_dims(gray_face, -1)
+        emotion_prediction = emotion_classifier.predict(gray_face)
+        emotion_probability = np.max(emotion_prediction)
+        emotion_label_arg = np.argmax(emotion_prediction)
+        emotion_text = emotion_labels[emotion_label_arg]
+        emotion_window.append(emotion_text)
+
+        if len(emotion_window) > frame_window:
+            emotion_window.pop(0)
+        try:
+            emotion_mode = mode(emotion_window)
+        except:
+            continue
+
+        if emotion_text == 'angry':
+            color = emotion_probability * np.asarray((255, 0, 0))
+        elif emotion_text == 'sad':
+            color = emotion_probability * np.asarray((0, 0, 255))
+        elif emotion_text == 'happy':
+            color = emotion_probability * np.asarray((255, 255, 0))
+        elif emotion_text == 'surprise':
+            color = emotion_probability * np.asarray((0, 255, 255))
+        else:
+            color = emotion_probability * np.asarray((0, 255, 0))
+
+        color = color.astype(int)
+        color = color.tolist()
+
+        draw_bounding_box(face_utils.rect_to_bb(face_coordinates), rgb_image, color)
+        draw_text(face_utils.rect_to_bb(face_coordinates), rgb_image, emotion_mode,
+                  color, 0, -45, 1, 1)
+
+    bgr_image = cv2.cvtColor(rgb_image, cv2.COLOR_RGB2BGR)
+    cv2.imshow('window_frame', bgr_image)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+        </code>
+    </pre>
+    <h2>Click below to run code</h2>
+    <button class = "button" ><a target = "_blank" href = "http://localhost/face-recognition-login-system/trial.php">Test</a></button><br><br>
+    <h1 style = "color: black;">Code for emotion recogition through camera</h1>
+    <pre>
+        <code>
+    from __future__ import division
+    from keras.models import model_from_json
+    import cv2
+    import numpy as np
+    
+    with open('model.json', 'r') as json_file:
+        loaded_model_json = json_file.read()
+    loaded_model = model_from_json(loaded_model_json)
+    loaded_model.load_weights("models/model.h5")
+    print("Retreived model feature from JSON file!")
+    
+    loaded_model.summary()
+    
+    cv2.ocl.setUseOpenCL(False)
+    
+    emotion_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutral", 5: "Sad", 6: "Surprised"}
+    
+    cap = cv2.VideoCapture(0)
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        face = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face.detectMultiScale(gray,scaleFactor=1.2, minNeighbors=5)
+        for (x, y, w, h) in faces:
+            roi_gray = gray[y:y + h, x:x + w]
+            cropped_img = np.expand_dims(np.expand_dims(cv2.resize(roi_gray, (48, 48)), -1), 0)
+            cv2.normalize(cropped_img, cropped_img, alpha=0, beta=1, norm_type=cv2.NORM_L2, dtype=cv2.CV_32F)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 1)
+            pred = loaded_model.predict(cropped_img)
+            maxindex = int(np.argmax(pred))
+            cv2.putText(frame, emotion_dict[maxindex], (x+20, y-60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        cv2.imshow('Emotion Detection ', cv2.resize(frame,(840, 600),interpolation = cv2.INTER_CUBIC))
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    
+    cap.release()
+    cv2.destroyAllWindows()                 
+        </code>
+    </pre>
+    <button class = "button" ><a target = "_blank" href = "http://localhost/J-comp/trial/trial.php">Test</a></button><br><br>
+    <script src="./highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
